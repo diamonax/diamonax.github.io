@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Invert Image - Online Image Invert Tool</title>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="apple-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"> 
+<meta name="description" content="Invert the colors of the given image.">
+<meta name="keywords" content="free, online, browser, tool, web, utility, image, picture, invert, color, colors, convert, converter, edit, editor">
+    
+<style>
+body {
+    background-color: rgb(220, 235, 235);
+    /*padding-top: 5vh;*/
+    color: rgb(250, 250, 250);
+    margin: 0;
+    padding: 0;
+    font: 16px asap, sans-serif;
+}
+
+.about {
+    text-decoration: none;
+    color: rgb(250, 250, 250);
+}
+
+.about:hover {
+    color: rgb(220, 50, 50);
+}
+
+.outer {
+    /*position: absolute;
+    top: 50%;
+    margin-top: -260px;
+    left: 0;
+    width: 100%;*/
+    margin-bottom: 64px;
+    margin-top: 8vh;
+}
+
+.title {
+    color: black;
+    font: bold 36px asap, sans-serif;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+
+.subtitle {
+    color: black;
+    font: 20px asap, sans-serif;
+    margin-top: 4px;
+    margin-bottom: 28px;
+}
+
+.ad {
+    display: none;
+    padding-left: 9vw;
+}
+
+.box {
+    display: inline-block;
+    min-width: 600px;
+    padding: 24px;
+    background-color: rgb(190, 210, 220);
+    border-radius: 4px;
+    text-align: left;
+    box-shadow: 0px 4px 3px 0px rgba(0, 0, 0, 0.3);
+    color: black;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(170, 185, 185);
+    color: white;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /*padding-left: 100px;*/
+    font: 16px asap, sans-serif;
+    z-index: 2;
+    /*border-top: 1px solid rgb(140, 155, 155);*/
+}
+
+.button1 {
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 4px;
+    background: hsl(220, 100%, 67%);
+    border-style: outset;
+    font: 18px asap, sans-serif;
+    color: white;
+    border-width: 2px;
+    cursor: pointer;
+    outline: none;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.button1:active {
+    border-style: inset;
+}
+
+.button1-disabled {
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 4px;
+    background-color: rgb(180, 180, 180);
+    border-style: outset;
+    font: 18px asap, sans-serif;
+    color: white;
+    border-width: 2px;
+    cursor: default;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.label {
+    display: inline-block;
+    width: 130px;
+    font: bold 20px asap, sans-serif;
+}
+
+.fileinput {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+select {
+    font-size: 14px;
+}
+
+@media screen and (max-height: 700px) {
+    .outer {
+        margin-top: 3vh;
+    }
+}
+
+@media screen and (max-width: 700px) {    
+    select {
+        font-size: 11px;
+    }
+    
+    .box {
+        padding: 16px;
+        min-width: 0px;
+    }
+    
+    .outer {
+        margin-top: 5vh;
+    }
+    
+    .footer {
+        font-size: 14px;
+    }
+    
+    .button1 {
+        font-size: 16px;
+    }
+    
+    .button1-disabled {
+        font-size: 16px;
+    }
+    
+    .title {
+        font-size: 22px;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+    }
+    
+    .ad {
+        padding-top: 32px;
+        padding-left: 0px;
+    }
+    
+    td {
+        display: block;
+    }
+}
+
+#frame {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 2px dashed rgba(250, 250, 250, 0.7);
+    width: 420px;
+    height: 320px;
+}
+
+#canvas-div {
+    width: 320px;
+    height: 200px;
+    box-sizing: border-box;
+    padding-top: 0px;
+}
+</style>
+</head>
+<body>
+
+<div align="center">
+    <div class="outer">
+    <table>
+    <tr><td>
+<div class="title">Invert Image</div>
+<div class="subtitle">Invert the colors of the given image.</div>
+
+<div class="box">
+    <div style="margin: 0px 16px; margin-top: 16px; margin-bottom: 16px;">
+        <table><tr><td>
+        
+        <div class="label">Input Image:</div><br><br>
+        <input id="input-image" class="fileinput" type="file" accept=".png, .jpg, .bmp">
+        
+        
+        </td><td style="padding-left: 64px">
+        
+        <div id="canvas-div" align="center">
+            <canvas id="frame" width="720" height="560" style="width: 320px; height: 200px"></canvas>
+        </div>
+        
+        </td></tr></table>
+    </div>
+</div>
+
+<div style="margin-top: 42px" align="center">
+    <a id="button-download" class="button1-disabled" role="button">Download Image</a>
+</div>
+
+    </td><td>
+        <div class="ad" align="center">
+            
+        </div>
+    </td></tr>
+    </table>
+    </div>
+    
+    <div class="footer">© 2019 <a class="about" href="//webutilities.net">webutilities.net</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="about" href="//webutilities.net/about">About</a></div>
+</div>
+
+
+<script>
+function $(id) {
+    return document.getElementById(id);
+}
+
+var canvas = document.getElementById("frame");
+var ctx = canvas.getContext("2d");
+
+ctx.font = "48px asap, sans-serif";
+ctx.textAlign = "center";
+ctx.fillStyle = "rgb(230, 230, 230)";
+ctx.fillText("an image", canvas.width/2, canvas.height/2 + 10);
+
+$("frame").addEventListener("dragover", function (evt) {
+    evt.preventDefault();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(250, 250, 250, 0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgb(230, 230, 230)";
+    ctx.fillText("drop image here", canvas.width/2, canvas.height/2 + 10);
+});
+
+$("frame").addEventListener("dragleave", function (evt) {
+    evt.preventDefault();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgb(230, 230, 230)";
+    ctx.fillText("an image", canvas.width/2, canvas.height/2 + 10);
+});
+
+var originalSource = null;
+var image = new Image();
+var imageData = null;
+var name = "";
+var extension = "";
+var type = "";
+
+var maxWidth = 0;
+var maxHeight = 0;
+
+window.addEventListener("drop", function (evt) {
+    evt.preventDefault();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    loadImage(evt.dataTransfer.files);
+});
+
+$("input-image").addEventListener("change", function (evt) {
+    loadImage(evt.target.files);
+});
+
+image.addEventListener("load", function () {
+    canvas.width = image.width;
+    canvas.height = image.height;
+    ctx.drawImage(image, 0, 0);
+    originalSource = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    redraw();
+    
+    //$("frame").style.border = "2px solid rgba(250, 250, 250, 0.7)";
+    $("button-download").setAttribute("class", "button1");
+});
+
+function redraw() {
+    if (!originalSource) return;
+    
+    var dst = convertImageInvert(originalSource);
+    canvas.width = dst.width;
+    canvas.height = dst.height;
+    ctx.putImageData(dst, 0, 0);
+    fitImage();
+}
+
+if ($("check1")) {
+    $("check1").addEventListener("change", redraw);
+    $("check2").addEventListener("change", redraw);
+}
+
+if ($("radio1")) {
+    $("radio1").addEventListener("change", redraw);
+    $("radio2").addEventListener("change", redraw);
+    $("radio3").addEventListener("change", redraw);
+    $("radio4").addEventListener("change", redraw);
+}
+
+function loadImage(files) {
+    if (files.length === 0) {
+        return;
+    }
+    
+    var file = files[0];
+    type = file.type;
+    
+    if (type !== "image/png" && type !== "image/jpeg" && type !== "image/bmp") {
+        return;
+    }
+    
+    var index = file.name.lastIndexOf(".");
+    name = file.name.slice(0, index);
+    extension = file.name.slice(index);
+    
+    var reader = new FileReader();
+    reader.addEventListener("load", function (evt) {
+        image.src = evt.target.result;
+    });   
+    reader.readAsDataURL(file);
+}
+
+function convertImageGrayscale(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var i = 0; i < dst.data.length; i += 4) {
+        var r = src.data[i + 0];
+        var g = src.data[i + 1];
+        var b = src.data[i + 2];
+        var a = src.data[i + 3];
+        var value = (r + g + b) / 3;
+        dst.data[i + 0] = value;
+        dst.data[i + 1] = value;
+        dst.data[i + 2] = value;
+        dst.data[i + 3] = a;
+    }
+    
+    return dst;
+}
+
+function convertImageInvert(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var i = 0; i < dst.data.length; i += 4) {
+        var r = src.data[i + 0];
+        var g = src.data[i + 1];
+        var b = src.data[i + 2];
+        var a = src.data[i + 3];
+        dst.data[i + 0] = 255 - r;
+        dst.data[i + 1] = 255 - g;
+        dst.data[i + 2] = 255 - b;
+        dst.data[i + 3] = a;
+    }
+    
+    return dst;
+}
+
+function convertImageSepia(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var i = 0; i < dst.data.length; i += 4) {
+        var r = src.data[i + 0];
+        var g = src.data[i + 1];
+        var b = src.data[i + 2];
+        var a = src.data[i + 3];
+        dst.data[i + 0] = r * 0.393 + g * 0.769 + b * 0.189;
+        dst.data[i + 1] = r * 0.349 + g * 0.686 + b * 0.168;
+        dst.data[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
+        dst.data[i + 3] = a;
+    }
+    
+    return dst;
+}
+
+function convertImageMirror(src) {
+    var horizontally = $("check1").checked;
+    var vertically = $("check2").checked;
+    
+    if (horizontally && vertically) {
+        return convertImageRotate180(src);
+    } if (horizontally) {
+        return convertImageMirrorHorizontally(src);
+    } else if (vertically) {
+        return convertImageMirrorVertically(src);
+    } else {
+        return convertImageRotate0(src);
+    }
+}
+
+function convertImageRotate(src) {
+    var rotate0 = $("radio1").checked;
+    var rotate90 = $("radio2").checked;
+    var rotate180 = $("radio3").checked;
+    var rotate270 = $("radio4").checked;
+    
+    if (rotate0) {
+        return convertImageRotate0(src);
+    } else if (rotate90) {
+        return convertImageRotate90(src);
+    } else if (rotate180) {
+        return convertImageRotate180(src);
+    } else if (rotate270) {
+        return convertImageRotate270(src);
+    } else {
+        return convertImageRotate0(src);
+    }
+}
+
+function convertImageMirrorHorizontally(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var y = 0; y < src.height; y++) {
+        for (var x = 0; x < src.width; x++) {
+            var i = (x + y * src.width) * 4;
+            var j = (src.width - 1 - x + y * src.width) * 4;
+            dst.data[j + 0] = src.data[i + 0];
+            dst.data[j + 1] = src.data[i + 1];
+            dst.data[j + 2] = src.data[i + 2];
+            dst.data[j + 3] = src.data[i + 3];
+        }
+    }
+    
+    return dst;
+}
+
+function convertImageMirrorVertically(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var y = 0; y < src.height; y++) {
+        for (var x = 0; x < src.width; x++) {
+            var i = (x + y * src.width) * 4;
+            var j = (x + (src.height - 1 - y) * src.width) * 4;
+            dst.data[j + 0] = src.data[i + 0];
+            dst.data[j + 1] = src.data[i + 1];
+            dst.data[j + 2] = src.data[i + 2];
+            dst.data[j + 3] = src.data[i + 3];
+        }
+    }
+    
+    return dst;
+}
+
+function convertImageRotate0(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var i = 0; i < dst.data.length; i++) {
+        dst.data[i] = src.data[i];
+    }
+    
+    return dst;
+}
+
+function convertImageRotate90(src) {
+    var dst = ctx.createImageData(src.height, src.width);
+    
+    for (var y = 0; y < src.height; y++) {
+        for (var x = 0; x < src.width; x++) {
+            var i = (x + y * src.width) * 4;
+            var j = (y + (src.width - 1 - x) * src.height) * 4;
+            dst.data[j + 0] = src.data[i + 0];
+            dst.data[j + 1] = src.data[i + 1];
+            dst.data[j + 2] = src.data[i + 2];
+            dst.data[j + 3] = src.data[i + 3];
+        }
+    }
+    
+    return dst;
+}
+
+function convertImageRotate180(src) {
+    var dst = ctx.createImageData(src.width, src.height);
+    
+    for (var y = 0; y < src.height; y++) {
+        for (var x = 0; x < src.width; x++) {
+            var i = (x + y * src.width) * 4;
+            var j = ((src.height - 1 - y) * src.width + (src.width - 1 - x)) * 4;
+            dst.data[j + 0] = src.data[i + 0];
+            dst.data[j + 1] = src.data[i + 1];
+            dst.data[j + 2] = src.data[i + 2];
+            dst.data[j + 3] = src.data[i + 3];
+        }
+    }
+    
+    return dst;
+}
+
+function convertImageRotate270(src) {
+    var dst = ctx.createImageData(src.height, src.width);
+    
+    for (var y = 0; y < src.height; y++) {
+        for (var x = 0; x < src.width; x++) {
+            var i = (x + y * src.width) * 4;
+            var j = ((src.height - 1 - y) + x * src.height) * 4;
+            dst.data[j + 0] = src.data[i + 0];
+            dst.data[j + 1] = src.data[i + 1];
+            dst.data[j + 2] = src.data[i + 2];
+            dst.data[j + 3] = src.data[i + 3];
+        }
+    }
+    
+    return dst;
+}
+
+$("button-download").addEventListener("click", function () {
+    if (this.getAttribute("class") === "button1-disabled") {
+        return;
+    }
+    
+    this.setAttribute("href", canvas.toDataURL(type));
+    this.setAttribute("download", name + "_inverted" + extension);
+    
+    setTimeout(function (self) {
+        self.removeAttribute("href");
+        self.removeAttribute("download");
+    }, 0, this);
+});
+
+function fitImage() {
+    var w = maxWidth;
+    var h = maxHeight;
+    var sw = canvas.width;
+    var sh = canvas.height;
+    
+    var r = w / h;
+    var sr = sw / sh;
+    
+    if (r > sr) {
+        sw *= h / sh;
+        sh = h;
+    } else {
+        sh *= w / sw;
+        sw = w;
+    }
+    
+    canvas.style.width = Math.floor(sw) + "px";
+    canvas.style.height = Math.floor(sh) + "px";
+    
+    $("canvas-div").style.paddingTop = Math.floor(maxHeight/2 - sh/2) + "px";
+}
+
+function resizeHandler() {
+    
+    if (window.innerWidth < 500) {
+        maxWidth = 260;
+        maxHeight = 198;
+        fitImage();
+    } else {
+        maxWidth = 320;//Math.max(260, window.innerWidth/2);
+        maxHeight = 200;//Math.max(198, window.innerHeight/2.4);
+        fitImage();
+    }
+}
+
+window.addEventListener("resize", resizeHandler);
+window.addEventListener("load", resizeHandler);
+
+</script>
+</body>
+</html>

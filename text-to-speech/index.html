@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Web Utilities - Homepage</title>
+<title>Text to Speech - Online Text-to-Speech Tool</title>
     
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,8 +10,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" href="favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"> 
-<meta name="description" content="webutilities.net is a website that hosts a bunch of useful web based tools that are completely free to use.">
-<meta name="keywords" content="free, online, browser, tool, web, utility, home, homepage, web, utilities, webutilities">
+<meta name="description" content="Make the computer say the given text out loud.">
+<meta name="keywords" content="free, online, browser, tool, web, utility, text, speech, convert, converter, text-to-speech, voice, utterance, speak, say, pronounce, pronunciation, computer, ai, artificial, robot">
     
 <style>
 body {
@@ -199,32 +199,26 @@ select {
     }
 }
 
-.container {
-    width: 600px;
+.list {
+    font: 14px sans-serif;
 }
 
-.link {
-    display: block;
-    margin: 8px;
-    text-decoration: none;
-    font-size: 20px;
-    padding: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: black;/*rgb(10, 60, 250);*/
-    background-color: rgb(170, 190, 210);
-    border: 1px solid teal;
-    border-radius: 4px;
-}
-
-.link:hover {
-    color: rgb(10, 60, 250);
-    background-color: rgb(150, 190, 200);
+.input {
+    width: 580px;
+    height: 80px;
+    padding: 8px 8px;
+    font: 22px asap, sans-serif;
+    display: inline-block;
 }
 
 @media screen and (max-width: 700px) {
-    .container {
-        width: 264px;
+    .list {
+        font: 11px sans-serif;
+    }
+    
+    .input {
+        width: 320px;
+        font-size: 18px;
     }
 }
 
@@ -236,34 +230,22 @@ select {
     <div class="outer">
     <table>
     <tr><td>
-<div class="title">Web Utilities</div>
-<div class="subtitle">A list of online, free, useful, simple to use web based tools.</div>
+<div class="title">Text to Speech</div>
+<div class="subtitle">Make the computer say the given text out loud.</div>
 
-<div class="box container" style="font-size: 16px">
-    <table align="center"><tr><td>
-    
-    <a class="link" href="./reverse-audio">Reverse Audio</a>
-    <a class="link" href="./tune-pitch">Tune Pitch</a>
-    <a class="link" href="./tune-pan">Tune Pan</a>
-    <a class="link" href="./test-microphone">Test Microphone</a>
-    <a class="link" href="./test-webcam">Test Webcam</a>
-    <a class="link" href="./flip-text">Flip Text</a>
-    <a class="link" href="./reverse-text">Reverse Text</a>
-    <a class="link" href="./text-to-speech">Text to Speech</a>
-    
-    </td><td style="display: inline-block; margin-left: 96px">
-    
-    <a class="link" href="./shift-subtitles">Shift Subtitles</a>
-    <a class="link" href="./rotate-image">Rotate Image</a>
-    <a class="link" href="./mirror-image">Mirror Image</a>
-    <a class="link" href="./invert-image">Invert Image</a>
-    <a class="link" href="./sepia-image">Sepia Image</a>
-    <a class="link" href="./grayscale-image">Grayscale Image</a>
-    
-    <a class="link" href="./generate-number">Generate Number</a>
-    <a class="link" href="./stopwatch">Stopwatch</a>
-    
-    </td></tr></table>
+<div class="box">
+    <textarea id="input" class="input" placeholder="Type here..." autofocus></textarea>
+    <div align="center" style="margin-top: 28px; margin-bottom: 8px">
+        Voice: &nbsp;<select id="select-voice" class="list"></select>
+        <br><br>
+        Pitch: &nbsp;<select id="select-pitch" class="list"></select>
+        &nbsp;&nbsp;&nbsp;
+        Speed: &nbsp;<select id="select-rate" class="list"></select>
+    </div>
+</div>
+
+<div style="margin-top: 42px" align="center">
+    <button id="button-speak" class="button1" style="padding-left: 32px; padding-right: 32px">Listen to Text</button>
 </div>
 
     </td><td>
@@ -283,6 +265,73 @@ function $(id) {
     return document.getElementById(id);
 }
 
+$("input").addEventListener("input", function () {
+    var text = this.value;
+    if (text.length < 70) {
+        this.style.fontSize = "22px";
+    } else if (text.length < 500) {
+        this.style.fontSize = "18px";
+    } else {
+        this.style.fontSize = "14px";
+    }
+});
+
+$("button-speak").addEventListener("click", function () {
+    var text = $("input").value;
+    if (text.trim() === "") return;
+    
+    var voice = $("select-voice").selectedIndex;
+    var rate = $("select-rate").selectedIndex;
+    var pitch = $("select-pitch").selectedIndex;
+    
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = window.speechSynthesis.getVoices()[voice];
+    utterance.rate = parseFloat($("select-rate").options[rate].textContent);
+    utterance.pitch = pitch;
+    utterance.volume = 1;
+    
+    window.speechSynthesis.speak(utterance);
+});
+
+window.addEventListener("load", function () {
+    var rates = [ "0.25", "0.5", "1", "1.5", "2" ];
+    
+    for (var i = 0; i < rates.length; i++) {
+        var option = document.createElement("option");
+        option.textContent = rates[i];
+        $("select-rate").appendChild(option);
+    }
+    
+    var pitches = [ "Low", "Medium", "High" ];
+    
+    for (var i = 0; i < pitches.length; i++) {
+        var option = document.createElement("option");
+        option.textContent = pitches[i];
+        $("select-pitch").appendChild(option);
+    }
+    
+    $("select-rate").selectedIndex = 2;
+    $("select-pitch").selectedIndex = 1;
+    
+    updateVoices();
+});
+
+function updateVoices() {
+    if ($("select-voice").options.length > 0) {
+        return;
+    }
+    
+    var voices = window.speechSynthesis.getVoices();
+    
+    for (var i = 0; i < voices.length; i++) {
+        var voice = voices[i];
+        var option = document.createElement("option");
+        option.textContent = voice.name;
+        $("select-voice").appendChild(option);
+    }
+    
+    setTimeout(updateVoices, 500);
+}
 
 </script>
 </body>

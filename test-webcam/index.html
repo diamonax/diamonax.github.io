@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Web Utilities - Homepage</title>
+<title>Test Webcam - Online Camera Tool</title>
     
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,8 +10,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" href="favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"> 
-<meta name="description" content="webutilities.net is a website that hosts a bunch of useful web based tools that are completely free to use.">
-<meta name="keywords" content="free, online, browser, tool, web, utility, home, homepage, web, utilities, webutilities">
+<meta name="description" content="Test your webcam and take pictures with your camera.">
+<meta name="keywords" content="free, online, browser, tool, web, utility, video, webcam, camera, test, snap, picture, pictures, photo, photos, cam">
     
 <style>
 body {
@@ -199,33 +199,9 @@ select {
     }
 }
 
-.container {
-    width: 600px;
-}
-
-.link {
-    display: block;
-    margin: 8px;
-    text-decoration: none;
-    font-size: 20px;
-    padding: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: black;/*rgb(10, 60, 250);*/
-    background-color: rgb(170, 190, 210);
-    border: 1px solid teal;
-    border-radius: 4px;
-}
-
-.link:hover {
-    color: rgb(10, 60, 250);
-    background-color: rgb(150, 190, 200);
-}
-
-@media screen and (max-width: 700px) {
-    .container {
-        width: 264px;
-    }
+canvas {
+    background-color: black;
+    border: 2px solid rgba(250, 250, 250, 0.7);
 }
 
 </style>
@@ -236,34 +212,18 @@ select {
     <div class="outer">
     <table>
     <tr><td>
-<div class="title">Web Utilities</div>
-<div class="subtitle">A list of online, free, useful, simple to use web based tools.</div>
+<div class="title">Test Webcam</div>
+<div class="subtitle">Test your webcam and take pictures with your camera.</div>
 
-<div class="box container" style="font-size: 16px">
-    <table align="center"><tr><td>
-    
-    <a class="link" href="./reverse-audio">Reverse Audio</a>
-    <a class="link" href="./tune-pitch">Tune Pitch</a>
-    <a class="link" href="./tune-pan">Tune Pan</a>
-    <a class="link" href="./test-microphone">Test Microphone</a>
-    <a class="link" href="./test-webcam">Test Webcam</a>
-    <a class="link" href="./flip-text">Flip Text</a>
-    <a class="link" href="./reverse-text">Reverse Text</a>
-    <a class="link" href="./text-to-speech">Text to Speech</a>
-    
-    </td><td style="display: inline-block; margin-left: 96px">
-    
-    <a class="link" href="./shift-subtitles">Shift Subtitles</a>
-    <a class="link" href="./rotate-image">Rotate Image</a>
-    <a class="link" href="./mirror-image">Mirror Image</a>
-    <a class="link" href="./invert-image">Invert Image</a>
-    <a class="link" href="./sepia-image">Sepia Image</a>
-    <a class="link" href="./grayscale-image">Grayscale Image</a>
-    
-    <a class="link" href="./generate-number">Generate Number</a>
-    <a class="link" href="./stopwatch">Stopwatch</a>
-    
-    </td></tr></table>
+<div class="box">
+    <div align="center">
+        <canvas id="canvas" width="360" height="280"></canvas>
+    </div>
+</div>
+
+<div style="margin-top: 42px" align="center">
+    <a id="button-fullscreen" class="button1" role="button">Go Fullscreen</a>&nbsp;&nbsp;&nbsp;
+    <a id="button-picture" class="button1-disabled" role="button">Take Picture</a>
 </div>
 
     </td><td>
@@ -283,6 +243,79 @@ function $(id) {
     return document.getElementById(id);
 }
 
+var canvas = $("canvas");
+var ctx = canvas.getContext("2d");
+var video = document.createElement("video");
+video.autoplay = true;
+
+ctx.fillStyle = "white";
+ctx.font = "16px asap, sans-serif";
+ctx.textAlign = "center";
+ctx.fillText("Please allow camera access.", canvas.width/2, canvas.height/2 + 10);
+
+navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: { facingMode: "user" },
+})
+.then(function (stream) {
+    video.srcObject = stream;
+    requestAnimationFrame(renderFrame);
+    $("button-picture").setAttribute("class", "button1");
+})
+.catch(function (err) {
+    // error
+});
+
+$("button-fullscreen").addEventListener("click", function () {
+    canvas.requestFullscreen();
+});
+
+function renderFrame() {
+    resizeCanvas();
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, canvas.width, canvas.height);
+    
+    requestAnimationFrame(renderFrame);
+}
+
+function resizeCanvas() {
+    let height = 320;//Math.max(280, window.innerHeight/2.4);
+    let width = height / 280 * 360;
+    
+    if (video.srcObject) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        width = Math.floor(height / video.videoHeight * video.videoWidth);
+    } else {
+        canvas.width = Math.floor(width);
+        canvas.height = Math.floor(height);
+        ctx.fillStyle = "white";
+        ctx.font = "16px asap, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Please allow camera access.", canvas.width/2, canvas.height/2 + 10);
+    }
+    
+    canvas.style.width = Math.floor(width) + "px";
+    canvas.style.height = Math.floor(height) + "px";
+}
+
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("load", resizeCanvas);
+
+$("button-picture").addEventListener("click", function () {
+    if (this.getAttribute("class") === "button1-disabled") {
+        return;
+    }
+    
+    this.setAttribute("href", canvas.toDataURL("image/png"));
+    this.setAttribute("download", "picture.png");
+    
+    setTimeout(function (self) {
+        self.removeAttribute("href");
+        self.removeAttribute("download");
+    }, 0, this);
+});
 
 </script>
 </body>

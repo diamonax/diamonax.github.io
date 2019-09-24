@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Web Utilities - Homepage</title>
+<title>Stopwatch - Online Timer Tool</title>
     
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,8 +10,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" href="favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"> 
-<meta name="description" content="webutilities.net is a website that hosts a bunch of useful web based tools that are completely free to use.">
-<meta name="keywords" content="free, online, browser, tool, web, utility, home, homepage, web, utilities, webutilities">
+<meta name="description" content="A simple stopwatch to measure time.">
+<meta name="keywords" content="free, online, browser, tool, web, utility, time, stopwatch, timer, measure, milliseconds, seconds, minutes, hours">
     
 <style>
 body {
@@ -199,33 +199,13 @@ select {
     }
 }
 
-.container {
-    width: 600px;
+#time {
+    font-size: 64px;
+    margin: 16px;
 }
 
-.link {
-    display: block;
-    margin: 8px;
-    text-decoration: none;
-    font-size: 20px;
-    padding: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: black;/*rgb(10, 60, 250);*/
-    background-color: rgb(170, 190, 210);
-    border: 1px solid teal;
-    border-radius: 4px;
-}
-
-.link:hover {
-    color: rgb(10, 60, 250);
-    background-color: rgb(150, 190, 200);
-}
-
-@media screen and (max-width: 700px) {
-    .container {
-        width: 264px;
-    }
+.running {
+    background-color: red;
 }
 
 </style>
@@ -236,34 +216,17 @@ select {
     <div class="outer">
     <table>
     <tr><td>
-<div class="title">Web Utilities</div>
-<div class="subtitle">A list of online, free, useful, simple to use web based tools.</div>
+<div class="title">Stopwatch</div>
+<div class="subtitle">A simple stopwatch to measure time.</div>
 
-<div class="box container" style="font-size: 16px">
-    <table align="center"><tr><td>
-    
-    <a class="link" href="./reverse-audio">Reverse Audio</a>
-    <a class="link" href="./tune-pitch">Tune Pitch</a>
-    <a class="link" href="./tune-pan">Tune Pan</a>
-    <a class="link" href="./test-microphone">Test Microphone</a>
-    <a class="link" href="./test-webcam">Test Webcam</a>
-    <a class="link" href="./flip-text">Flip Text</a>
-    <a class="link" href="./reverse-text">Reverse Text</a>
-    <a class="link" href="./text-to-speech">Text to Speech</a>
-    
-    </td><td style="display: inline-block; margin-left: 96px">
-    
-    <a class="link" href="./shift-subtitles">Shift Subtitles</a>
-    <a class="link" href="./rotate-image">Rotate Image</a>
-    <a class="link" href="./mirror-image">Mirror Image</a>
-    <a class="link" href="./invert-image">Invert Image</a>
-    <a class="link" href="./sepia-image">Sepia Image</a>
-    <a class="link" href="./grayscale-image">Grayscale Image</a>
-    
-    <a class="link" href="./generate-number">Generate Number</a>
-    <a class="link" href="./stopwatch">Stopwatch</a>
-    
-    </td></tr></table>
+<div class="box">
+    <div id="time" align="center">00:00:00.000</div>
+</div>
+
+<div style="margin-top: 42px" align="center">
+    <button id="button-start" class="button1">Start Timer</button>
+    &nbsp;&nbsp;&nbsp;
+    <button id="button-reset" class="button1">Reset Timer</button>
 </div>
 
     </td><td>
@@ -283,6 +246,85 @@ function $(id) {
     return document.getElementById(id);
 }
 
+window.addEventListener("keydown", function (e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        toggleTimer();
+    }
+});
+$("button-start").addEventListener("click", toggleTimer);
+$("button-reset").addEventListener("click", resetTimer);
+
+var timerState = 0;
+var time = 0;
+var currentTime = 0;
+resetTimer();
+
+function formatTime(t) {
+    var milliseconds = Math.floor(t % 1000);
+    var seconds = Math.floor(t / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var hours = Math.floor(minutes / 60);
+    seconds %= 60;
+    minutes %= 60;
+    
+    var millisecondsText = "0".repeat(3 - ("" + milliseconds).length) + milliseconds;
+    var secondsText = "0".repeat(2 - ("" + seconds).length) + seconds;
+    var minutesText = "0".repeat(2 - ("" + minutes).length) + minutes;
+    var hoursText = (("" + hours).length < 2 ? "0" : "") + hours;
+    
+    millisecondsText = '<span style="font-size: 32px">. ' + millisecondsText + '</span>';
+    
+    return hoursText + " : " + minutesText + " : " + secondsText + " " + millisecondsText;
+}
+
+function toggleTimer() {
+    switch (timerState) {
+        case 0:
+            time = performance.now();
+            $("time").style.color = "blue";
+            toggleButton(true);
+            timerState = 1;
+            break;
+            
+        case 1:
+            time = performance.now() - time;
+            currentTime += time;
+            $("time").innerHTML = formatTime(currentTime);
+            $("time").style.color = "black";
+            toggleButton(false);
+            timerState = 0;
+            break;
+    }
+}
+
+function resetTimer() {
+    $("time").innerHTML = formatTime(0);
+    $("time").style.color = "black";
+    time = 0;
+    currentTime = 0;
+    timerState = 0;
+    toggleButton(false);
+}
+
+function toggleButton(on) {
+    if (on) {
+        $("button-start").innerHTML = "Stop Timer";
+        $("button-start").setAttribute("class", "button1 running");
+    } else {
+        $("button-start").innerHTML = "Start Timer";
+        $("button-start").setAttribute("class", "button1");
+    }
+}
+
+function updateLoop() {
+    if (timerState === 1) {
+        $("time").innerHTML = formatTime(currentTime + (performance.now() - time));
+    }
+    window.requestAnimationFrame(updateLoop);
+}
+
+window.addEventListener("load", updateLoop);
 
 </script>
 </body>

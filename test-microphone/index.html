@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Web Utilities - Homepage</title>
+<title>Test Microphone - Online Voice Recorder Tool</title>
     
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,8 +10,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" href="favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Asap" rel="stylesheet"> 
-<meta name="description" content="webutilities.net is a website that hosts a bunch of useful web based tools that are completely free to use.">
-<meta name="keywords" content="free, online, browser, tool, web, utility, home, homepage, web, utilities, webutilities">
+<meta name="description" content="Test your microphone and record your voice or any other audio.">
+<meta name="keywords" content="free, online, browser, tool, web, utility, audio, sound, voice, record, recorder, recording, microphone, test, mic, playback, hear, listen">
     
 <style>
 body {
@@ -199,35 +199,19 @@ select {
     }
 }
 
-.container {
-    width: 600px;
+.recording {
+    background-color: red;
 }
 
-.link {
-    display: block;
-    margin: 8px;
-    text-decoration: none;
-    font-size: 20px;
-    padding: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: black;/*rgb(10, 60, 250);*/
-    background-color: rgb(170, 190, 210);
-    border: 1px solid teal;
-    border-radius: 4px;
-}
-
-.link:hover {
-    color: rgb(10, 60, 250);
-    background-color: rgb(150, 190, 200);
+audio {
+    width: 400px;
 }
 
 @media screen and (max-width: 700px) {
-    .container {
-        width: 264px;
+    audio {
+        width: 260px;
     }
 }
-
 </style>
 </head>
 <body>
@@ -236,34 +220,20 @@ select {
     <div class="outer">
     <table>
     <tr><td>
-<div class="title">Web Utilities</div>
-<div class="subtitle">A list of online, free, useful, simple to use web based tools.</div>
+<div class="title">Test Microphone</div>
+<div class="subtitle">Test your microphone and record your voice or any other audio.</div>
 
-<div class="box container" style="font-size: 16px">
-    <table align="center"><tr><td>
-    
-    <a class="link" href="./reverse-audio">Reverse Audio</a>
-    <a class="link" href="./tune-pitch">Tune Pitch</a>
-    <a class="link" href="./tune-pan">Tune Pan</a>
-    <a class="link" href="./test-microphone">Test Microphone</a>
-    <a class="link" href="./test-webcam">Test Webcam</a>
-    <a class="link" href="./flip-text">Flip Text</a>
-    <a class="link" href="./reverse-text">Reverse Text</a>
-    <a class="link" href="./text-to-speech">Text to Speech</a>
-    
-    </td><td style="display: inline-block; margin-left: 96px">
-    
-    <a class="link" href="./shift-subtitles">Shift Subtitles</a>
-    <a class="link" href="./rotate-image">Rotate Image</a>
-    <a class="link" href="./mirror-image">Mirror Image</a>
-    <a class="link" href="./invert-image">Invert Image</a>
-    <a class="link" href="./sepia-image">Sepia Image</a>
-    <a class="link" href="./grayscale-image">Grayscale Image</a>
-    
-    <a class="link" href="./generate-number">Generate Number</a>
-    <a class="link" href="./stopwatch">Stopwatch</a>
-    
-    </td></tr></table>
+<div class="box">
+    <div align="center" style="margin: 0px 16px; margin-top: 16px; margin-bottom: 16px;">
+        <div class="label" style="width: 400px">Recorded Audio Fragment:</div><br><br>
+        <audio id="audio-player" controls></audio>
+    </div>
+</div>
+
+<div style="margin-top: 42px" align="center">
+    <button id="button-microphone" class="button1">Start Recording</button>
+    &nbsp;&nbsp;&nbsp;
+    <a id="button-download" class="button1-disabled" role="button">Download Audio</a>
 </div>
 
     </td><td>
@@ -283,6 +253,62 @@ function $(id) {
     return document.getElementById(id);
 }
 
+var RECORDING = false;
+var recorder = null;
+var source = null;
+var mime = "";
+
+$("button-download").addEventListener("click", function () {
+    if (this.getAttribute("class") === "button1-disabled") {
+        return;
+    }
+    
+    this.setAttribute("href", source);
+    this.setAttribute("download", "recording." + mime.slice(mime.indexOf("/") + 1));
+    
+    setTimeout(function (self) {
+        self.removeAttribute("href");
+        self.removeAttribute("download");
+    }, 0, this);
+});
+
+$("button-microphone").addEventListener("click", function () {
+    if (RECORDING) {
+        recorder.stop();
+        
+        RECORDING = false;
+        this.innerHTML = "Start Recording";
+        this.setAttribute("class", "button1");
+    } else {
+        navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false
+        }).then(function (stream) {
+            var chunks = [];
+            
+            mime = [ "audio/wav", "audio/mpeg", "audio/ogg", "audio/webm" ].filter(MediaRecorder.isTypeSupported)[0];
+            recorder = new MediaRecorder(stream, { mimeType: mime });
+            recorder.start();
+            
+            recorder.addEventListener("start", function () {
+                RECORDING = true;
+                $("button-microphone").setAttribute("class", "button1 recording");
+                $("button-microphone").innerHTML = "Stop Recording";
+            });
+            
+            recorder.addEventListener("dataavailable", function (event) {
+                chunks.push(event.data);
+            });
+            
+            recorder.addEventListener("stop", function () {
+                var blob = new Blob(chunks);
+                source = URL.createObjectURL(blob);
+                $("audio-player").src = source;
+                $("button-download").setAttribute("class", "button1");
+            });
+        });
+    }
+});
 
 </script>
 </body>
